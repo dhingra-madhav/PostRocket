@@ -7,15 +7,24 @@ import { signInSuccess } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
 
 const OAuth = () => {
+
+  // get the firebase auth instance
   const auth = getAuth(app);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // handle Google Sign-in
   const handleGoogleClick = async () => {
+
+    // create a provider object for Google sign-in
     const provider = new GoogleAuthProvider();
+
     provider.setCustomParameters({ prompt: "select_account" });
+
     try {
       const resultsFromGoogle = await signInWithPopup(auth, provider);
+
       const res = await fetch("/api/auth/google", {
         method: "POST",
         headers: {
@@ -27,15 +36,19 @@ const OAuth = () => {
           photoURL: resultsFromGoogle.user.photoURL,
         }),
       });
+      
       const data = await res.json();
 
       if (res.ok) {
         dispatch(signInSuccess(data));
         navigate("/");
       }
-    } catch (error) {
+
+    } 
+    catch (error) {
       console.error(error);
     }
+
   };
 
   return (
